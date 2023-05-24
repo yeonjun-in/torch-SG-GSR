@@ -27,7 +27,7 @@ def get_data(root, name, attack, ptb_rate):
         dataset.val_mask = torch.from_numpy(np.in1d(np.arange(len(labels)), idx_val)).bool()
         dataset.test_mask = torch.from_numpy(np.in1d(np.arange(len(labels)), idx_test)).bool()
 
-    elif name in ['photo', 'computers']:
+    elif name in ['computers']:
         from torch_geometric.datasets import Amazon
         dataset = Amazon(root, name)[0]
         dataset.edge_index = to_undirected(dataset.edge_index)
@@ -45,7 +45,7 @@ def get_data(root, name, attack, ptb_rate):
             torch.save(dataset.val_mask, f'{root}{name}_val_mask.pt')
             torch.save(dataset.test_mask, f'{root}{name}_test_mask.pt')
 
-    elif name in ['Automotive_0', 'Automotive_100', 'Pet_Supplies_0', 'Pet_Supplies_200', 'Patio_Lawn_and_Garden_0', 'Patio_Lawn_and_Garden_100']:
+    elif name in ['Pet_Supplies_0', 'Pet_Supplies_200', 'Patio_Lawn_and_Garden_0', 'Patio_Lawn_and_Garden_100']:
         dataset = torch.load(f'{root}{name}.pt')        
         return [dataset]
 
@@ -60,7 +60,7 @@ def get_data(root, name, attack, ptb_rate):
         return [dataset]
 
     elif attack == 'noisy_str_meta':
-        if name in ['photo', 'computers']:
+        if name in ['computers']:
             perturbed_adj = sp.load_npz(f'{root}{name}_meta_adj_0.25.npz')
             dataset.edge_index = dense_to_sparse(torch.from_numpy(perturbed_adj.toarray()))[0].long()
             dataset.edge_index = to_undirected(dataset.edge_index)
@@ -82,23 +82,8 @@ def get_data(root, name, attack, ptb_rate):
         dataset.test_mask = torch.from_numpy(np.in1d(np.arange(len(labels)), idx_test_att)).bool()
         return [dataset]
 
-    elif attack == 'noisy_str_dice_25':    
-        perturbed_adj = sp.load_npz(f'{root}{name}_dice_adj_0.25.npz')
-        dataset.edge_index = dense_to_sparse(torch.from_numpy(perturbed_adj.toarray()))[0].long()
-        dataset.edge_index = to_undirected(dataset.edge_index)
-        return [dataset]
-    
-    elif attack == 'noisy_str_rand_25':
-        attacker = Random()
-        n_perturbations = int(0.25 * (dataset.edge_index.shape[1]//2))
-        attacker.attack(adj, n_perturbations, type='add')
-        perturbed_adj = attacker.modified_adj
-        dataset.edge_index = dense_to_sparse(torch.from_numpy(perturbed_adj.toarray()))[0].long()            
-        dataset.edge_index = to_undirected(dataset.edge_index)
-        return [dataset]
-
     elif attack == 'real_world':
-        if name in ['photo', 'computers']:
+        if name in ['computers']:
             perturbed_adj = sp.load_npz(f'{root}{name}_meta_adj_0.25.npz')
             dataset.edge_index = dense_to_sparse(torch.from_numpy(perturbed_adj.toarray()))[0].long()
             dataset.edge_index = to_undirected(dataset.edge_index)
@@ -156,58 +141,6 @@ def get_data(root, name, attack, ptb_rate):
             print(f'# Only Str-Attacked Nodes: {(str_attacked_node_mask * ~feat_attacked_mask).sum()}, # Only Ft-Attacked Nodes: {(~str_attacked_node_mask * feat_attacked_mask).sum()}, # Both-Attacked Nodes: {(feat_attacked_mask*str_attacked_node_mask).sum()}, # Pure Nodes {(~feat_attacked_mask*~str_attacked_node_mask).sum()}')
         return [dataset]
     
-    elif attack == 'real_world_dice_25':
-        perturbed_adj = sp.load_npz(f'{root}{name}_dice_adj_0.25.npz')
-        dataset.edge_index = dense_to_sparse(torch.from_numpy(perturbed_adj.toarray()))[0].long()
-        dataset.edge_index = to_undirected(dataset.edge_index)
-
-        if name=='polblogs':
-            return [dataset]
-        elif os.path.isfile(f'{root}{name}_{attack}_x.pt'):
-            dataset.x = torch.load(f'{root}{name}_{attack}_x.pt')
-        else:
-            str_attacked_node_mask = (perturbed_adj > adj).toarray().sum(1).astype(bool)
-            str_attacked_node = str_attacked_node_mask.nonzero()[0]
-            str_non_attacked_node = (~str_attacked_node_mask).nonzero()[0]
-            
-            feat_attacked_node1 = np.random.choice(str_attacked_node, len(str_attacked_node)//2, replace=False)
-            feat_attacked_node2 = np.random.choice(str_non_attacked_node, len(str_non_attacked_node)//2, replace=False)
-            feat_attacked_nodes = np.sort(np.concatenate((feat_attacked_node1, feat_attacked_node2)))
-            feat_attacked_mask = np.in1d(np.arange(dataset.x.size(0)), feat_attacked_nodes)
-            perturb = torch.randn_like(dataset.x)
-            dataset.x[feat_attacked_mask] = dataset.x[feat_attacked_mask] + perturb[feat_attacked_mask]*0.5
-            torch.save(dataset.x, f'{root}{name}_{attack}_x.pt')
-            print(f'# Only Str-Attacked Nodes: {(str_attacked_node_mask * ~feat_attacked_mask).sum()}, # Only Ft-Attacked Nodes: {(~str_attacked_node_mask * feat_attacked_mask).sum()}, # Both-Attacked Nodes: {(feat_attacked_mask*str_attacked_node_mask).sum()}, # Pure Nodes {(~feat_attacked_mask*~str_attacked_node_mask).sum()}')
-        return [dataset]
-    
-    elif attack == 'real_world_rand_25':
-        attacker = Random()
-        n_perturbations = int(0.25 * (dataset.edge_index.shape[1]//2))
-        attacker.attack(adj, n_perturbations, type='add')
-        perturbed_adj = attacker.modified_adj
-        dataset.edge_index = dense_to_sparse(torch.from_numpy(perturbed_adj.toarray()))[0].long()            
-        dataset.edge_index = to_undirected(dataset.edge_index)
-        
-        if name=='polblogs':
-            return [dataset]
-        elif os.path.isfile(f'{root}{name}_{attack}_x.pt'):
-            dataset.x = torch.load(f'{root}{name}_{attack}_x.pt')
-        else:
-            str_attacked_node_mask = (perturbed_adj > adj).toarray().sum(1).astype(bool)
-            str_attacked_node = str_attacked_node_mask.nonzero()[0]
-            str_non_attacked_node = (~str_attacked_node_mask).nonzero()[0]
-            
-            feat_attacked_node1 = np.random.choice(str_attacked_node, len(str_attacked_node)//2, replace=False)
-            feat_attacked_node2 = np.random.choice(str_non_attacked_node, len(str_non_attacked_node)//2, replace=False)
-            feat_attacked_nodes = np.sort(np.concatenate((feat_attacked_node1, feat_attacked_node2)))
-            feat_attacked_mask = np.in1d(np.arange(dataset.x.size(0)), feat_attacked_nodes)
-            perturb = torch.randn_like(dataset.x)
-            dataset.x[feat_attacked_mask] = dataset.x[feat_attacked_mask] + perturb[feat_attacked_mask]*0.5
-            torch.save(dataset.x, f'{root}{name}_{attack}_x.pt')
-            print(f'# Only Str-Attacked Nodes: {(str_attacked_node_mask * ~feat_attacked_mask).sum()}, # Only Ft-Attacked Nodes: {(~str_attacked_node_mask * feat_attacked_mask).sum()}, # Both-Attacked Nodes: {(feat_attacked_mask*str_attacked_node_mask).sum()}, # Pure Nodes {(~feat_attacked_mask*~str_attacked_node_mask).sum()}')
-        return [dataset]
-
-
 def create_masks(data):
     """
     Splits data into training, validation, and test splits in a stratified manner if
