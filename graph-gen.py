@@ -19,7 +19,7 @@ def parse_args():
     parser.add_argument('--num_fraud', default=100, type=int)
     parser.add_argument('--num_attack', default=100, type=int)
     parser.add_argument('--edge_thre', default=2, type=int)
-    parser.add_argument('--dataset_str', default='Automotive', type=str)
+    parser.add_argument('--dataset_str', default='Pet_Supplies', type=str)
     parser.add_argument('--text', default='summary', type=str)
     parser.add_argument("--save", action='store_true', default=False)
     parser.add_argument('--device', default=0, type=int)
