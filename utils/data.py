@@ -45,7 +45,7 @@ def get_data(root, name, attack, ptb_rate):
             torch.save(dataset.val_mask, f'{root}{name}_val_mask.pt')
             torch.save(dataset.test_mask, f'{root}{name}_test_mask.pt')
 
-    elif name in ['Pet_Supplies_0', 'Pet_Supplies_200', 'Patio_Lawn_and_Garden_0', 'Patio_Lawn_and_Garden_100']:
+    elif name in ['Pet_Supplies_0', 'Pet_Supplies_200_feat_attack', 'Patio_Lawn_and_Garden_0', 'Patio_Lawn_and_Garden_100_feat_attack']:
         dataset = torch.load(f'{root}{name}.pt')        
         return [dataset]
 
