@@ -29,4 +29,3 @@ sh create_ecommerce_fraud.sh
 ```
 
 Note that before executing the above code, you should download the raw data (i.e., Amazon review data) from the attached [link](http://jmcauley.ucsd.edu/data/amazon/links.html)
-
