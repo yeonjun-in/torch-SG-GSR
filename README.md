@@ -1,4 +1,4 @@
-# Self-guided Robust Graph Structure Refinement (SG-GSR)
+# SG-GSR: Self-Guided Robust Graph Structure Refinement
 
 <p align="center">   
     <a href="https://pytorch.org/" alt="PyTorch">
@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/pypi/l/torch-rechub">
 </p>
 
-The official source code for [**Self-guided Robust Graph Structure Refinement**]() at WWW 2024. 
+The official source code for [**Self-Guided Robust Graph Structure Refinement**]() at WWW 2024. 
 
 Yeonjun In, Kanghoon Yoon, Kibum Kim, Kijung Shin, and Chanyoung Park
 
