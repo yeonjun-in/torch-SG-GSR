@@ -53,13 +53,3 @@ Note that before executing the above code, you should download the raw data (i.e
 ### Cite (Bibtex)
 - If you find ``SG-GSR`` useful in your research, please cite the following paper:
   - Yeonjun In, Kanghoon Yoon, Kibum Kim, Kijung Shin, and Chanyoung Park. "Self-guided Robust Graph Structure Refinement." WWW 2024.
-  - Bibtex
-```
-@article{in2023similarity,
-  title={Similarity Preserving Adversarial Graph Contrastive Learning},
-  author={In, Yeonjun and Yoon, Kanghoon and Park, Chanyoung},
-  journal={arXiv preprint arXiv:2306.13854},
-  year={2023}
-}
-```
-
