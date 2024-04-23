@@ -8,7 +8,7 @@
     <img src="https://img.shields.io/pypi/l/torch-rechub">
 </p>
 
-The official source code for [**Self-Guided Robust Graph Structure Refinement**]() at WWW 2024 (Oral). 
+The official source code for [**Self-Guided Robust Graph Structure Refinement**](https://arxiv.org/abs/2402.11837) at WWW 2024 (Oral). 
 
 Yeonjun In, Kanghoon Yoon, Kibum Kim, Kijung Shin, and Chanyoung Park
 
